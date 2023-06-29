@@ -1,0 +1,16 @@
+services:
+  frontend:
+    build:
+      target: start
+
+  api:
+    build:
+      target: start
+
+  runner:
+    build:
+      target: start
+
+  ws_gateway:
+    build:
+      target: start

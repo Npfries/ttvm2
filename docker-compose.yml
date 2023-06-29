@@ -1,0 +1,58 @@
+version: "3.9"
+
+services:
+  frontend:
+    container_name: frontend
+    build:
+      context: ./apps/frontend/
+    ports:
+      - 4173:4173
+
+  api:
+    image: api
+    container_name: api
+    build:
+      context: ./apps/api/
+    environment:
+      - AMQP_HOST=amqp://rabbitmq
+      - TASKS_QUEUE_NAME=tasks
+      - RESULTS_QUEUE_NAME=results
+    ports:
+      - 3003:3000
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  runner:
+    image: runner
+    # container_name: runner
+    build:
+      context: ./apps/runner/
+    environment:
+      - AMQP_HOST=amqp://rabbitmq
+      - TASKS_QUEUE_NAME=tasks
+      - RESULTS_QUEUE_NAME=results
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    deploy:
+      replicas: 1
+
+  ws_gateway:
+    image: ws_gateway
+    build:
+      context: ./apps/ws-gateway/
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    container_name: rabbitmq
+    ports:
+      - 15672:15672
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 3s
+      timeout: 30s
+      retries: 3

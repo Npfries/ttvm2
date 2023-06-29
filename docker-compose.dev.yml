@@ -1,0 +1,24 @@
+services:
+  frontend:
+    build:
+      target: dev
+    volumes:
+      - ./apps/frontend/src/:/app/src/:ro
+
+  api:
+    build:
+      target: dev
+    volumes:
+      - ./apps/api/src/:/app/src/:ro
+
+  runner:
+    build:
+      target: dev
+    volumes:
+      - ./apps/runner/src/:/app/src/:ro
+
+  ws_gateway:
+    build:
+      target: dev
+    volumes:
+      - ./apps/ws-gateway/src/:/app/src/:ro
